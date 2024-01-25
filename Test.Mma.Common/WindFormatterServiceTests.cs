@@ -4,6 +4,8 @@ using global::Mma.Common.Services;
 using global::Mma.Common.models;
 using NUnit.Framework;
 using System.Collections;
+using Moq;
+using NLog;
 
 namespace Test.Mma.Common {
     //General format: ddd ff G fm fm KT dn dn dn V dx dx dx
@@ -68,10 +70,12 @@ namespace Test.Mma.Common {
 
     [TestFixture]
     public class Wind_formatter_tests {
+        private Mock<ILogger> _mockLogger;
         private IWindFormatterService windFormatter;
 
         [SetUp]
         public void SetUp() {
+            _mockLogger = new Mock<ILogger>();
             windFormatter = new WindFormatterService();
         }
 
@@ -88,7 +92,7 @@ namespace Test.Mma.Common {
                     "/////KT");
             }
         }
-        
+
         public static IEnumerable WindDataFullTestCases {
             get {
                 yield return new TestCaseData(
@@ -100,7 +104,7 @@ namespace Test.Mma.Common {
                         MinimumWindDirection = null
                     },
                     "02008KT");
-                
+
                 yield return new TestCaseData(
                     new WindData {
                         AverageWindSpeed = 0,
@@ -110,7 +114,7 @@ namespace Test.Mma.Common {
                         MinimumWindDirection = 0
                     },
                     "00000KT");
-                
+
                 yield return new TestCaseData(
                     new WindData {
                         AverageWindSpeed = 2,
@@ -119,8 +123,8 @@ namespace Test.Mma.Common {
                         MaximumWindSpeed = 0,
                         MinimumWindDirection = 100
                     },
-                    "VRB02KT"); 
-                
+                    "VRB02KT");
+
                 yield return new TestCaseData(
                     new WindData {
                         AverageWindSpeed = 22,
@@ -130,7 +134,7 @@ namespace Test.Mma.Common {
                         MinimumWindDirection = 100
                     },
                     "33022G34KT");
-                
+
                 yield return new TestCaseData(
                     new WindData {
                         AverageWindSpeed = 16,
@@ -140,7 +144,7 @@ namespace Test.Mma.Common {
                         MinimumWindDirection = 120
                     },
                     "16016KT 120V190");
-                
+
                 yield return new TestCaseData(
                     new WindData {
                         AverageWindSpeed = 15,
@@ -150,7 +154,7 @@ namespace Test.Mma.Common {
                         MinimumWindDirection = 180
                     },
                     "21015G28KT 180V270");
-                
+
                 yield return new TestCaseData(
                     new WindData {
                         AverageWindSpeed = 70,
@@ -159,8 +163,8 @@ namespace Test.Mma.Common {
                         MaximumWindSpeed = 100,
                         MinimumWindDirection = null
                     },
-                    "27070GP99KT"); 
-                
+                    "27070GP99KT");
+
                 yield return new TestCaseData(
                     new WindData {
                         AverageWindSpeed = 12,
@@ -172,7 +176,7 @@ namespace Test.Mma.Common {
                     "///12KT");
             }
         }
-        
+
         [TestCase(null, "///25KT")]
         [TestCase(10, "01025KT")]
         [TestCase(15, "01025KT")]
@@ -233,8 +237,6 @@ namespace Test.Mma.Common {
         [TestCase(0.9, 1)]
         [TestCase(1.4, 1)]
         public void Is_average_and_max_wind_speeds_rounded_to_the_nearest_knot(double? speed, int? expected) {
-            var windFormatter = new WindFormatterService();
-
             int? result = windFormatter.RoundWindSpeedToTheNearestKnot(speed);
 
             Assert.AreEqual(expected, result);
@@ -304,8 +306,8 @@ namespace Test.Mma.Common {
         [TestCase("000", "181", "05", "")]
         [TestCase("///", "181", "05", "")]
         [TestCase("000", "170", "04", " 000V170")]
-        public void Is_variation_in_wind_direction_in_range_and_greater_than_3(string minWindDirection, string maxWindDirection, string averageWindSpeed,string expected) {
-            string result = windFormatter.FormatVariationInDirection(minWindDirection, maxWindDirection, averageWindSpeed);
+        public void Is_variation_in_wind_direction_in_range_and_greater_than_3(string minWindDirection, string maxWindDirection, string averageWindSpeed, string expected) {
+            string result = windFormatter.FormatVariationInDirectionIfVariant(minWindDirection, maxWindDirection, averageWindSpeed);
 
             Assert.AreEqual(expected, result);
         }
@@ -340,10 +342,10 @@ namespace Test.Mma.Common {
             Assert.AreEqual(expected, result);
         }
 
-        [TestCase("340", "160", "030" ,"VRB")]
+        [TestCase("340", "160", "030", "VRB")]
         [TestCase("010", "180", "050", "050")]
-        [TestCase("///", "///","///", "///")]
-        [TestCase("190", "000","///", "VRB")]
+        [TestCase("///", "///", "///", "///")]
+        [TestCase("190", "000", "///", "VRB")]
         public void Is_variation_in_wind_direction_180_or_more(string minWindDirection, string maxWindDirection, string averageWindDirection, string expected) {
 
             string result = windFormatter.WindDirectionVariationIsGreaterThan180(minWindDirection, maxWindDirection, averageWindDirection);
@@ -356,5 +358,21 @@ namespace Test.Mma.Common {
 
             Assert.AreEqual(expected, result);
         }
+
+        [TestCase("100", "200", "10", " 100V200")]
+        [TestCase("110", "300", "100", "")]
+        public void Format_variation_in_direction_when_directions_valid_should_calculate_correct_variation(string minDirection, string maxDirection, string averageSpeed, string expected) {
+            string result = windFormatter.FormatVariationInDirectionIfVariant(minDirection, maxDirection, averageSpeed);
+
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestCase(null, "200", "10", "")]
+        public void Format_variation_in_direction_when_directions_invalid_should_return_empty_string(string minDirection, string maxDirection, string averageSpeed, string expected) {
+            string result = windFormatter.FormatVariationInDirectionIfVariant(minDirection, maxDirection, averageSpeed);
+
+            Assert.AreEqual("", result);
+        }
+
     }
 }

@@ -14,9 +14,10 @@ namespace Mma.Common.IServices
         bool SurfaceWindDirectionIsInRange(string ddd);
         bool SurfaceWindSpeedIsGreaterThan1(string ff);
         string FormatWindSpeed(string ff);
-        string FormatVariationInDirection(string minWindDirection, string maxWindDirection, string averageWindSpeed);
+        string FormatVariationInDirectionIfVariant(string minWindDirection, string maxWindDirection, string averageWindSpeed);
         string IsVariationInWindDirectionAndLessThan3Knots(string minWindDirection, string maxWindDirection, string averageWindSpeed);
         string FormatGust(double? averageWindSpeed, double? maximumWindSpeed);
         string WindDirectionVariationIsGreaterThan180(string minWindDirection, string maxWindDirection, string averageWindDirection);
+        void LogError(string functionName, string errorMessage);
     }
 }
