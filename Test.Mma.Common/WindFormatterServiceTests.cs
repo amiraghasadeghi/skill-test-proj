@@ -15,7 +15,7 @@ namespace Test.Mma.Common {
         [SetUp]
         public void SetUp() {
             _mockLogger = new Mock<ILogger>();
-            windFormatter = new WindFormatterService();
+            windFormatter = new WindFormatterService(_mockLogger.Object);
         }
 
         public static IEnumerable WindDataTestCases {
@@ -312,6 +312,22 @@ namespace Test.Mma.Common {
 
             Assert.AreEqual("", result);
         }
+
+        [Test]
+        public void LogError_WhenCalled_ShouldLogErrorWithCorrectFormat() {
+            var mockLogger = new Mock<ILogger>();
+            var windFormatterService = new WindFormatterService(mockLogger.Object);
+            var functionName = "TestFunction";
+            var errorMessage = "Test error message";
+
+            windFormatterService.LogError(functionName, errorMessage);
+
+            mockLogger.Verify(logger => logger.Error(It.Is<string>(message =>
+                message.Contains(functionName) &&
+                message.Contains(errorMessage) &&
+                message.Contains("utc"))), Times.Once);
+        }
+
 
     }
 }

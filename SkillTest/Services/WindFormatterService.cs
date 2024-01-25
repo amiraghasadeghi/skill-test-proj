@@ -6,7 +6,10 @@ using NLog;
 
 namespace Mma.Common.Services {
     public class WindFormatterService : IWindFormatterService {
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger _logger;
+        public WindFormatterService(ILogger logger) {
+            _logger = logger;
+        }
         public string FormatWind(WindData windData) {
             if (!WindFormatterHasData(windData)) {
                 return "/////KT"; // Return default value if no data
@@ -184,7 +187,7 @@ namespace Mma.Common.Services {
 
         public void LogError(string functionName, string errorMessage) {
             string timestamp = DateTime.UtcNow.ToString("dd/MM/yyy HH:mm:ss"); 
-            logger.Error($"{functionName} - {errorMessage} [{timestamp} utc]");
+            _logger.Error($"{functionName} - {errorMessage} [{timestamp} utc]");
         }
     }
 }
