@@ -180,8 +180,7 @@ namespace Mma.Common.Services {
         }
 
         public void LogError(string functionName, string errorMessage) {
-            // ISO 8601 format
-            string timestamp = DateTime.UtcNow.ToString("o"); 
+            string timestamp = DateTime.UtcNow.ToString("dd/MM/yyy HH:mm:ss"); 
             logger.Error($"{functionName} - {errorMessage} [{timestamp} utc]");
         }
     }

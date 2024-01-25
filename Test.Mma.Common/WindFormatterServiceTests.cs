@@ -370,6 +370,7 @@ namespace Test.Mma.Common {
         [TestCase(null, "200", "10", "")]
         public void Format_variation_in_direction_when_directions_invalid_should_return_empty_string(string minDirection, string maxDirection, string averageSpeed, string expected) {
             string result = windFormatter.FormatVariationInDirectionIfVariant(minDirection, maxDirection, averageSpeed);
+            windFormatter.LogError(minDirection, maxDirection);
 
             Assert.AreEqual("", result);
         }
