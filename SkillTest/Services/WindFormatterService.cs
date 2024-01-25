@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using System.Text;
 using Mma.Common.IServices;
 using Mma.Common.models;
 using NLog;
@@ -18,14 +17,17 @@ namespace Mma.Common.Services {
             }
 
             var ddd = FormatWindDirection(windData.AverageWindDirection);
+            
             var ff = FormatWindSpeed(RoundWindSpeed(windData.AverageWindSpeed));
+           
             var dnVdx = FormatVariationInDirectionIfVariant(FormatWindDirection(windData.MinimumWindDirection), FormatWindDirection(windData.MaximumWindDirection), ff);
+            
             var gust = FormatGust(RoundWindSpeedToTheNearestKnot(windData.AverageWindSpeed), RoundWindSpeedToTheNearestKnot(windData.MaximumWindSpeed));
+            
             var dnVdxAtLessThan3Knots = IsVariationInWindDirectionAndLessThan3Knots(FormatWindDirection(windData.MinimumWindDirection), FormatWindDirection(windData.MaximumWindDirection), ff);
             // If dbVdxAtLessThan3Knots has a value, use it instead of ddd
             string directionComponent = WindDirectionVariationIsGreaterThan180(FormatWindDirection(windData.MinimumWindDirection), FormatWindDirection(windData.MaximumWindDirection), !string.IsNullOrEmpty(dnVdxAtLessThan3Knots) ? dnVdxAtLessThan3Knots : ddd);
-            //Here I can handle all the errors, I can validate all
-            //the values coming in the model and if any doesn't match criteria I can return with error (specific error)
+           
             return $"{directionComponent}{ff}{gust}KT{dnVdx}";
         }
 
@@ -78,7 +80,8 @@ namespace Mma.Common.Services {
             } catch (Exception ex) {
                 LogError(MethodBase.GetCurrentMethod().Name, $"Error parsing wind direction: ex:{ex.Message}");
             }
-            return (false, 0); // Indicate failure
+            // Indicate failure
+            return (false, 0); 
         }
 
 

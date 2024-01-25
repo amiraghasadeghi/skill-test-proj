@@ -1,5 +1,4 @@
-﻿using global::Mma.Common;
-using global::Mma.Common.IServices;
+﻿using global::Mma.Common.IServices;
 using global::Mma.Common.Services;
 using global::Mma.Common.models;
 using NUnit.Framework;
@@ -8,66 +7,6 @@ using Moq;
 using NLog;
 
 namespace Test.Mma.Common {
-    //General format: ddd ff G fm fm KT dn dn dn V dx dx dx
-    //Where
-    //• ddd is the average surface wind direction over the previous 10 minutes 
-    //• ff is the average surface wind speed over the previous 10 minutes 
-    //• fm is the maximum surface wind gust speed over the previous 10 minutes
-    //• dn and dx describe the variation in surface wind direction(in clockwise order) over the
-    //previous 10 minutes of the surface wind speed
-
-
-    //Requirements
-    //1. The maximum wind(gust) within the last 10 minutes shall be reported only if it exceeds the
-    //average speed by 10 knots or more.
-
-    //2. Variations in wind direction shall be reported only when the total variation in direction over
-    //the previous ten-minute period is 60 degrees or more or but less than 180 degrees and the
-    //average wind speed is greater than 3 knots.Variations are reported in clockwise order(e.g.
-    //290V090 or 170V250).
-
-    //3. The average wind direction shall not be included for variable winds when the total variation
-    //in direction over the previous ten-minute period is 60 degrees or more or but less than 180 
-    //degrees and the wind speed is 3 knots or less; the wind in this case shall be reported as 
-    //variable.
-
-    //4. The average wind direction shall not be included for variable winds when the total variation
-    //in direction over the previous ten-minute period is 180 degrees or more or where it is not
-    //possible to report a average direction e.g.when a thunderstorm passes over the aerodrome.
-    //The wind should be reported as variable and no reference should be made to the two
-    //extreme directions between which the wind has varied.
-
-    //5. When the wind speed is less than 1 knot, this should be reported as calm.
-
-
-    //Range and increments
-    //1. The surface wind direction average and variations in direction shall be rounded to the
-    //nearest 10 degrees.
-    //2. Wind directions of 005, 015 degrees etc. should be rounded down.
-    //3. Surface wind direction is reported between 010 and 360 degrees.
-    //4. The surface wind average speed and maximum speed shall be rounded to the nearest knot
-    //in the METAR. Surface wind speed is reported between 01 and 99 knots.If the speed is 100 
-    //knots or more, the wind speed should be encoded as “P99” (see example 7 below).
-    //5. Calm is encoded as ‘00000KT’.
-    //6. Variable is encoded ‘VRB’.
-    //7. Missing values shall be encodes with /. 
-
-
-    //Examples of METAR surface wind coding
-    //1. 02008KT wind zero two zero degrees, 8 knots
-    //2. 00000KT wind calm
-    //3. VRB02KT wind variable, 2 knots (the variation in direction over the previous ten-minute
-    //period has been 60 degrees or more but less than 180 degrees and the wind speed is 3 
-    //knots or less)
-    //4. 33022G34KT wind three three zero degrees, 22 knots, max 34 knots
-    //5. 16016KT 120V190 wind one six zero degrees, sixteen knots, varying between 120 degrees
-    //and 190 degrees
-    //6. 21015G28KT 180V270 wind two one zero degrees, 15 knots, max 28 knots varying between 
-    //180 degrees and 270 degrees
-    //7. 27070GP99KT wind two seven zero degrees, 70 knots, max 100 knots or more
-    //8. ///12KT when average wind direction is missing
-
-
     [TestFixture]
     public class Wind_formatter_tests {
         private Mock<ILogger> _mockLogger;
@@ -229,7 +168,6 @@ namespace Test.Mma.Common {
             Assert.AreEqual(expected, result);
         }
 
-        //This test ensures that the wind speeds are rounded to the nearest knot
         [TestCase(null, null)]
         [TestCase(0, 0)]
         [TestCase(0.4, 0)]
