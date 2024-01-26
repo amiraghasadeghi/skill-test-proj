@@ -118,7 +118,7 @@ namespace Test.Mma.Common {
         [TestCase(null, 20, "")]
         [TestCase(null, null, "")]
         public void Is_wind_gust_reported(double? averageWindSpeed, double? maximumWindSpeed, string expected) {
-            string result = _windDataHelper.FormatGust(averageWindSpeed, maximumWindSpeed);
+            string result = _windDataHelper.FormatGustSpeed(averageWindSpeed, maximumWindSpeed);
 
             Assert.AreEqual(expected, result);
         }
@@ -136,7 +136,7 @@ namespace Test.Mma.Common {
         [TestCase("000", "170", "P99", "")]
         [TestCase("///", "181", "05", "")]
         public void Is_variation_in_wind_direction_in_range_and_less_than_3(string minWindDirection, string maxWindDirection, string averageWindSpeed, string expected) {
-            string result = _windDataHelper.IsVariationInWindDirectionAndLessThan3Knots(minWindDirection, maxWindDirection, averageWindSpeed);
+            string result = _windDataHelper.FormatVariationInDirectionForSpeedLessThan3Knots(minWindDirection, maxWindDirection, averageWindSpeed);
 
             Assert.AreEqual(expected, result);
         }
@@ -147,7 +147,7 @@ namespace Test.Mma.Common {
         [TestCase("190", "000", "///", "VRB")]
         public void Is_variation_in_wind_direction_180_or_more(string minWindDirection, string maxWindDirection, string averageWindDirection, string expected) {
 
-            string result = _windDataHelper.WindDirectionVariationIsGreaterThan180(minWindDirection, maxWindDirection, averageWindDirection);
+            string result = _windDataHelper.FormatWindDirectionVariationIsGreaterThan180(minWindDirection, maxWindDirection, averageWindDirection);
             Assert.AreEqual(expected, result);
         }
 
@@ -166,22 +166,5 @@ namespace Test.Mma.Common {
 
             Assert.AreEqual("", result);
         }
-
-        //[Test]
-        //public void LogError_WhenCalled_ShouldLogErrorWithCorrectFormat() {
-        //    var mockLogger = new Mock<ILogger>();
-        //    var windFormatterService = new WindDataHelper(mockLogger.Object);
-        //    var functionName = "TestFunction";
-        //    var errorMessage = "Test error message";
-
-        //    windFormatterService.LogError(functionName, errorMessage);
-
-        //    mockLogger.Verify(logger => logger.Error(It.Is<string>(message =>
-        //        message.Contains(functionName) &&
-        //        message.Contains(errorMessage) &&
-        //        message.Contains("utc"))), Times.Once);
-        //}
-
-
     }
 }

@@ -10,12 +10,12 @@ namespace Mma.Common.IHelpers {
         int? RoundDirectionToNearestTenDegrees(double? direction);
         bool SurfaceWindDirectionIsInRange(string ddd);
         bool SurfaceWindSpeedIsGreaterThan1(string ff);
-        string IsVariationInWindDirectionAndLessThan3Knots(string minWindDirection, string maxWindDirection, string averageWindSpeed);
-        string WindDirectionVariationIsGreaterThan180(string minWindDirection, string maxWindDirection, string averageWindDirection);
+        string FormatVariationInDirectionForSpeedLessThan3Knots(string minWindDirection, string maxWindDirection, string averageWindSpeed);
+        string FormatWindDirectionVariationIsGreaterThan180(string minWindDirection, string maxWindDirection, string averageWindDirection);
         string RoundWindSpeed(double? windSpeed);
         string FormatWindSpeed(string ff);
         string FormatVariationInDirectionIfVariant(string minWindDirection, string maxWindDirection, string averageWindSpeed);
-        string FormatGust(double? averageWindSpeed, double? maximumWindSpeed);
+        string FormatGustSpeed(double? averageWindSpeed, double? maximumWindSpeed);
         string FormatWindDirection(double? windDirection);
     }
 }

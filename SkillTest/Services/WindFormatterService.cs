@@ -22,15 +22,26 @@ namespace Mma.Common.Services {
 
             var ddd = _windDataHelper.FormatWindDirection(windData.AverageWindDirection);
             
-            var ff = _windDataHelper.FormatWindSpeed(_windDataHelper.RoundWindSpeed(windData.AverageWindSpeed));
+            var ff = _windDataHelper.FormatWindSpeed(
+                _windDataHelper.RoundWindSpeed(windData.AverageWindSpeed));
            
-            var dnVdx = _windDataHelper.FormatVariationInDirectionIfVariant(_windDataHelper.FormatWindDirection(windData.MinimumWindDirection), _windDataHelper.FormatWindDirection(windData.MaximumWindDirection), ff);
+            var dnVdx = _windDataHelper.FormatVariationInDirectionIfVariant(
+                _windDataHelper.FormatWindDirection(windData.MinimumWindDirection), 
+                _windDataHelper.FormatWindDirection(windData.MaximumWindDirection), ff);
             
-            var gust = _windDataHelper.FormatGust(_windDataHelper.RoundWindSpeedToTheNearestKnot(windData.AverageWindSpeed), _windDataHelper.RoundWindSpeedToTheNearestKnot(windData.MaximumWindSpeed));
+            var gust = _windDataHelper.FormatGustSpeed(
+                _windDataHelper.RoundWindSpeedToTheNearestKnot(windData.AverageWindSpeed), 
+                _windDataHelper.RoundWindSpeedToTheNearestKnot(windData.MaximumWindSpeed));
             
-            var dnVdxAtLessThan3Knots = _windDataHelper.IsVariationInWindDirectionAndLessThan3Knots(_windDataHelper.FormatWindDirection(windData.MinimumWindDirection), _windDataHelper.FormatWindDirection(windData.MaximumWindDirection), ff);
+            var dnVdxAtLessThan3Knots = _windDataHelper.FormatVariationInDirectionForSpeedLessThan3Knots(
+                _windDataHelper.FormatWindDirection(windData.MinimumWindDirection), 
+                _windDataHelper.FormatWindDirection(windData.MaximumWindDirection), ff);
+            
             // If dbVdxAtLessThan3Knots has a value, use it instead of ddd
-            string directionComponent = _windDataHelper.WindDirectionVariationIsGreaterThan180(_windDataHelper.FormatWindDirection(windData.MinimumWindDirection), _windDataHelper.FormatWindDirection(windData.MaximumWindDirection), !string.IsNullOrEmpty(dnVdxAtLessThan3Knots) ? dnVdxAtLessThan3Knots : ddd);
+            string directionComponent = _windDataHelper.FormatWindDirectionVariationIsGreaterThan180(
+                _windDataHelper.FormatWindDirection(windData.MinimumWindDirection), 
+                _windDataHelper.FormatWindDirection(windData.MaximumWindDirection), 
+                !string.IsNullOrEmpty(dnVdxAtLessThan3Knots) ? dnVdxAtLessThan3Knots : ddd);
            
             return $"{directionComponent}{ff}{gust}KT{dnVdx}";
         }

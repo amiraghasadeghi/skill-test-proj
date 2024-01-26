@@ -14,7 +14,7 @@ namespace Mma.Common.Helpers {
         public WindDataHelper(ILoggingService logger) {
             _loggingService = logger;
         }
-        public string FormatGust(double? averageWindSpeed, double? maximumWindSpeed) {
+        public string FormatGustSpeed(double? averageWindSpeed, double? maximumWindSpeed) {
             if (averageWindSpeed.HasValue && maximumWindSpeed.HasValue) {
                 if (RoundWindSpeedToTheNearestKnot(maximumWindSpeed.Value) - RoundWindSpeedToTheNearestKnot(averageWindSpeed.Value) >= 10) {
                     return $"G{FormatWindSpeed(RoundWindSpeed(maximumWindSpeed))}";
@@ -34,7 +34,7 @@ namespace Mma.Common.Helpers {
         }
 
 
-        public string IsVariationInWindDirectionAndLessThan3Knots(string minWindDirection, string maxWindDirection, string averageWindSpeed) {
+        public string FormatVariationInDirectionForSpeedLessThan3Knots(string minWindDirection, string maxWindDirection, string averageWindSpeed) {
             if (averageWindSpeed != "P99" && int.TryParse(averageWindSpeed, out int avgSpeed) && avgSpeed <= 3 && avgSpeed >= 0) {
                 var (success, variation) = TryCalculateWindDirectionVariation(minWindDirection, maxWindDirection);
                 if (success && variation >= 60 && variation < 180) {
@@ -44,7 +44,7 @@ namespace Mma.Common.Helpers {
             return "";
         }
 
-        public string WindDirectionVariationIsGreaterThan180(string minWindDirection, string maxWindDirection, string averageWindDirection) {
+        public string FormatWindDirectionVariationIsGreaterThan180(string minWindDirection, string maxWindDirection, string averageWindDirection) {
             var (success, variation) = TryCalculateWindDirectionVariation(minWindDirection, maxWindDirection);
             if (success && variation >= 180) {
                 return "VRB";
