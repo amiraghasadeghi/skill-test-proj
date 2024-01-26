@@ -1,4 +1,5 @@
-﻿using Mma.Common.IServices;
+﻿using Mma.Common.Exceptions;
+using Mma.Common.IServices;
 using Mma.Common.models;
 using Mma.Common.Utility;
 using System;
@@ -23,11 +24,15 @@ namespace Mma.Common.Helpers
 
         public string FormatGustSpeed(double? averageWindSpeed, double? maximumWindSpeed) {
             if (averageWindSpeed.HasValue && maximumWindSpeed.HasValue) {
-                if (RoundWindSpeedToTheNearestKnot(maximumWindSpeed.Value) - RoundWindSpeedToTheNearestKnot(averageWindSpeed.Value) >= 10) {
+                if (IsGust(maximumWindSpeed, averageWindSpeed)) {
                     return $"G{FormatWindSpeed(RoundWindSpeed(maximumWindSpeed))}";
                 }
             }
             return "";
+        }
+
+        private bool IsGust(double? maxSpeed, double? averageSpeed) {
+            return RoundWindSpeedToTheNearestKnot(maxSpeed.Value) - RoundWindSpeedToTheNearestKnot(averageSpeed.Value) >= 10;
         }
 
         public string FormatVariationInDirectionIfVariant(string minWindDirection, string maxWindDirection, string averageWindSpeed) {
@@ -99,23 +104,29 @@ namespace Mma.Common.Helpers
 
         public string FormatWindSpeed(string ff) {
             if (string.IsNullOrEmpty(ff)) return "//";
-            if (int.TryParse(ff, out int windSpeed)) {
-                switch (windSpeed) {
-                    case int n when n >= 100:
-                        // Return "P99" for wind speeds of 100 knots or more
-                        return "P99";
-                    case int n when n >= 1:
-                        // Return wind speed formatted as a string for speeds between 1 and 99 knots
-                        return n.ToString("D2");
-                    case 0:
-                        // Return "00000" for calm wind
-                        return "00";
-                    default:
-                        return "//"; // Return this if parsing fails or if wind speed is less than 1
+            try {
+                if (int.TryParse(ff, out int windSpeed)) {
+                    switch (windSpeed) {
+                        case int n when n >= 100:
+                            // Return "P99" for wind speeds of 100 knots or more
+                            return "P99";
+                        case int n when n >= 1:
+                            // Return wind speed formatted as a string for speeds between 1 and 99 knots
+                            return n.ToString("D2");
+                        case 0:
+                            // Return "00000" for calm wind
+                            return "00";
+                        default:
+                            return "//"; // Return this if parsing fails or if wind speed is less than 1
+                    }
                 }
+            } catch(Exception ex) {
+                _loggingService.LogError(MethodBase.GetCurrentMethod().Name, "Failed to format wind speed");
+                if (ex is IntParseException) throw new IntParseException(string.Empty);
+                throw new IntParseException(ex.Message);
             }
-            // Return "//" if parsing fails or if wind speed is less than 1
-            _loggingService.LogError(MethodBase.GetCurrentMethod().Name, "Failed to format wind speed");
+            
+            // Return "//" if wind speed is less than 1
             return "//";
         }
 
