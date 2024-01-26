@@ -7,6 +7,7 @@ using Moq;
 using NLog;
 using Mma.Common.IHelpers;
 using Mma.Common.Helpers;
+using Test.Mma.Common.TestCaseSources;
 
 namespace Test.Mma.Common {
     [TestFixture]
@@ -29,12 +30,14 @@ namespace Test.Mma.Common {
             Assert.IsFalse(result);
         }
 
-        [TestCase(null, null)]
-        [TestCase(0, 0)]
-        [TestCase(0.4, 0)]
-        [TestCase(0.5, 1)]
-        [TestCase(0.9, 1)]
-        [TestCase(1.4, 1)]
+        [Test, TestCaseSource(typeof(WindDataTestSource), nameof(WindDataTestSource.CalmWindDataTestCases))]
+        public void Is_calm_wind_returning_correct_boolean_value(WindData windData, bool expected) {
+            bool result = _windDataHelper.IsCalmWind(windData);
+
+            Assert.AreEqual(expected, result);
+        }
+
+        [Test, TestCaseSource(typeof(WindDataTestSource), nameof(WindDataTestSource.SpeedRoundingTestCases))]
         public void Is_average_and_max_wind_speeds_rounded_to_the_nearest_knot(double? speed, int? expected) {
             int? result = _windDataHelper.RoundWindSpeedToTheNearestKnot(speed);
 
@@ -78,33 +81,14 @@ namespace Test.Mma.Common {
             Assert.AreEqual(expected, result);
         }
 
-        [TestCase("05", "05")]
-        [TestCase("01", "01")]
-        [TestCase("99", "99")]
-        [TestCase("-05", "//")]
-        [TestCase("00", "00")]
-        [TestCase("100", "P99")]
-        [TestCase("101", "P99")]
-        [TestCase("//", "//")]
-        [TestCase(null, "//")]
+        [Test, TestCaseSource(typeof(WindDataTestSource), nameof(WindDataTestSource.SurfaceWindSpeedGreaterThan100TestCases))]
         public void Is_surface_wind_speed_greater_than_100_or_more_reported_as_P99(string ff, string expected) {
             string result = _windDataHelper.FormatWindSpeed(ff);
 
             Assert.AreEqual(expected, result);
         }
 
-        [TestCase("005", "005", "05", "")]
-        [TestCase(null, null, null, "")]
-        [TestCase("-005", "065", "03", "")]
-        [TestCase("005", "065", "00", "")]
-        [TestCase("005", "065", "-01", "")]
-        [TestCase("000", "059", "03", "")]
-        [TestCase("000", "070", "03", "")]
-        [TestCase("000", "180", "04", "")]
-        [TestCase("000", "179", "P99", " 000V179")]
-        [TestCase("000", "181", "05", "")]
-        [TestCase("///", "181", "05", "")]
-        [TestCase("000", "170", "04", " 000V170")]
+        [Test, TestCaseSource(typeof(WindDataTestSource), nameof(WindDataTestSource.VariationInWindDirectionInRangeAndLessThan3TestCases))]
         public void Is_variation_in_wind_direction_in_range_and_greater_than_3(string minWindDirection, string maxWindDirection, string averageWindSpeed, string expected) {
             string result = _windDataHelper.FormatVariationInDirectionIfVariant(minWindDirection, maxWindDirection, averageWindSpeed);
 
@@ -123,18 +107,7 @@ namespace Test.Mma.Common {
             Assert.AreEqual(expected, result);
         }
 
-        [TestCase("005", "005", "05", "")]
-        [TestCase(null, null, null, "")]
-        [TestCase("-005", "065", "03", "")]
-        [TestCase("005", "065", "00", "VRB")]
-        [TestCase("005", "065", "-01", "")]
-        [TestCase("000", "059", "03", "")]
-        [TestCase("000", "070", "03", "VRB")]
-        [TestCase("000", "180", "02", "")]
-        [TestCase("000", "179", "01", "VRB")]
-        [TestCase("000", "181", "05", "")]
-        [TestCase("000", "170", "P99", "")]
-        [TestCase("///", "181", "05", "")]
+        [Test, TestCaseSource(typeof(WindDataTestSource), nameof(WindDataTestSource.DirectionForSpeedLessThan3KnotsTestCases))]
         public void Is_variation_in_wind_direction_in_range_and_less_than_3(string minWindDirection, string maxWindDirection, string averageWindSpeed, string expected) {
             string result = _windDataHelper.FormatVariationInDirectionForSpeedLessThan3Knots(minWindDirection, maxWindDirection, averageWindSpeed);
 

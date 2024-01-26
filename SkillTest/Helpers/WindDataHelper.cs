@@ -14,6 +14,16 @@ namespace Mma.Common.Helpers {
         public WindDataHelper(ILoggingService logger) {
             _loggingService = logger;
         }
+
+        /// <summary>
+        /// Determines if the wind is calm based on the given wind data.
+        /// </summary>
+        /// <param name="windData">The wind data to check.</param>
+        /// <returns>True if the wind is calm; otherwise, false.</returns>
+        public bool IsCalmWind(WindData windData) {
+            return windData.AverageWindSpeed.HasValue && windData.AverageWindSpeed <= 1;
+        }
+
         public string FormatGustSpeed(double? averageWindSpeed, double? maximumWindSpeed) {
             if (averageWindSpeed.HasValue && maximumWindSpeed.HasValue) {
                 if (RoundWindSpeedToTheNearestKnot(maximumWindSpeed.Value) - RoundWindSpeedToTheNearestKnot(averageWindSpeed.Value) >= 10) {

@@ -7,6 +7,7 @@ using Moq;
 using NLog;
 using Mma.Common.IHelpers;
 using Mma.Common.Helpers;
+using Test.Mma.Common.TestCaseSources;
 
 namespace Test.Mma.Common {
     [TestFixture]
@@ -38,89 +39,6 @@ namespace Test.Mma.Common {
             }
         }
 
-        public static IEnumerable WindDataFullTestCases {
-            get {
-                yield return new TestCaseData(
-                    new WindData {
-                        AverageWindSpeed = 8,
-                        MaximumWindDirection = null,
-                        AverageWindDirection = 20,
-                        MaximumWindSpeed = null,
-                        MinimumWindDirection = null
-                    },
-                    "02008KT");
-
-                yield return new TestCaseData(
-                    new WindData {
-                        AverageWindSpeed = 0,
-                        MaximumWindDirection = 0,
-                        AverageWindDirection = 0,
-                        MaximumWindSpeed = 0,
-                        MinimumWindDirection = 0
-                    },
-                    "00000KT");
-
-                yield return new TestCaseData(
-                    new WindData {
-                        AverageWindSpeed = 2,
-                        MaximumWindDirection = 180,
-                        AverageWindDirection = 50,
-                        MaximumWindSpeed = 0,
-                        MinimumWindDirection = 100
-                    },
-                    "VRB02KT");
-
-                yield return new TestCaseData(
-                    new WindData {
-                        AverageWindSpeed = 22,
-                        MaximumWindDirection = null,
-                        AverageWindDirection = 330,
-                        MaximumWindSpeed = 34,
-                        MinimumWindDirection = 100
-                    },
-                    "33022G34KT");
-
-                yield return new TestCaseData(
-                    new WindData {
-                        AverageWindSpeed = 16,
-                        MaximumWindDirection = 190,
-                        AverageWindDirection = 160,
-                        MaximumWindSpeed = null,
-                        MinimumWindDirection = 120
-                    },
-                    "16016KT 120V190");
-
-                yield return new TestCaseData(
-                    new WindData {
-                        AverageWindSpeed = 15,
-                        MaximumWindDirection = 270,
-                        AverageWindDirection = 210,
-                        MaximumWindSpeed = 28,
-                        MinimumWindDirection = 180
-                    },
-                    "21015G28KT 180V270");
-
-                yield return new TestCaseData(
-                    new WindData {
-                        AverageWindSpeed = 70,
-                        MaximumWindDirection = null,
-                        AverageWindDirection = 270,
-                        MaximumWindSpeed = 100,
-                        MinimumWindDirection = null
-                    },
-                    "27070GP99KT");
-
-                yield return new TestCaseData(
-                    new WindData {
-                        AverageWindSpeed = 12,
-                        MaximumWindDirection = null,
-                        AverageWindDirection = null,
-                        MaximumWindSpeed = null,
-                        MinimumWindDirection = null
-                    },
-                    "///12KT");
-            }
-        }
 
         [TestCase(null, "///25KT")]
         [TestCase(10, "01025KT")]
@@ -141,7 +59,7 @@ namespace Test.Mma.Common {
         }
 
         //First I want to write some tests for the simplest cases
-        [Test, TestCaseSource(nameof(WindDataTestCases))]
+        [Test, TestCaseSource(typeof(WindDataTestSource), nameof(WindDataTestSource.WindDataFullTestCases))]
         public void Format_wind_wind_data_no_value_is_correct(WindData windData, string expected) {
             string result = windFormatter.FormatWind(windData);
 
@@ -167,7 +85,7 @@ namespace Test.Mma.Common {
         }
 
 
-        [Test, TestCaseSource(nameof(WindDataFullTestCases))]
+        [Test, TestCaseSource(typeof(WindDataTestSource), nameof(WindDataTestSource.WindDataFullTestCases))]
         public void Is_wind_data_report_correct(WindData windData, string expected) {
             string result = windFormatter.FormatWind(windData);
 
