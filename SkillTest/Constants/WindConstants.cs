@@ -11,6 +11,16 @@ namespace Mma.Common.Constants {
     public class WindConstants {
         private readonly ILoggingService _loggingService;
 
+        // Constants representing different wind speeds and conditions.
+        public const string CalmWinds = "00000KT";
+        public const string Default = "/////KT";
+        public const string HundredAndOver = "P99";
+        public const string Gust = "G";
+        public const string Knot = "KT";
+        public const string MissingSpeed = "//";
+        public const string MissingDirection = "///";
+        public const string VariableSpeed = "VRB";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WindConstants"/> class.
         /// </summary>
@@ -19,13 +29,6 @@ namespace Mma.Common.Constants {
             _loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
         }
 
-        // Constants representing different wind speeds and conditions.
-        public const string CalmWinds = "00000KT";
-        public const string Default = "/////KT";
-        public const string HundredAndOver = "P99";
-        public const string Gust = "G";
-        public const string Knot = "KT";
-
         // Dictionary mapping wind constant values to their descriptions.
         private static readonly Dictionary<string, string> ValuesAndDescriptions = new Dictionary<string, string> {
             {CalmWinds ,"Calm winds"},
@@ -33,6 +36,9 @@ namespace Mma.Common.Constants {
             {HundredAndOver,"Hundred and over"},
             {Gust,"Gust"},
             {Knot,"Knot"},
+            {MissingSpeed,"//"},
+            {MissingDirection,"///"},
+            {VariableSpeed,"VBR"},
         };
 
         // Reverse dictionary to map descriptions back to their constant values.

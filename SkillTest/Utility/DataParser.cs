@@ -1,4 +1,5 @@
-﻿using Mma.Common.IServices;
+﻿using Mma.Common.Constants;
+using Mma.Common.IServices;
 using Mma.Common.models;
 using Mma.Common.Utility;
 using System;
@@ -29,7 +30,7 @@ namespace Mma.Common.Helpers {
         public string FormatGustSpeed(double? averageWindSpeed, double? maximumWindSpeed) {
             if (averageWindSpeed.HasValue && maximumWindSpeed.HasValue) {
                 if (IsGust(maximumWindSpeed, averageWindSpeed)) {
-                    return $"G{FormatWindSpeed(RoundWindSpeed(maximumWindSpeed))}";
+                    return $"{WindConstants.Gust}{FormatWindSpeed(RoundWindSpeed(maximumWindSpeed))}";
                 }
             }
             return "";
@@ -51,7 +52,7 @@ namespace Mma.Common.Helpers {
         /// If these conditions are met, it returns a formatted string showing the range of variation; otherwise, it returns an empty string.
         /// </remarks>
         public string FormatVariationInDirectionIfVariant(string minWindDirection, string maxWindDirection, string averageWindSpeed) {
-            if (averageWindSpeed == "P99" || int.TryParse(averageWindSpeed, out int avgSpeed) && avgSpeed > 3) {
+            if (averageWindSpeed == WindConstants.HundredAndOver || int.TryParse(averageWindSpeed, out int avgSpeed) && avgSpeed > 3) {
                 var (success, variation) = TryCalculateWindDirectionVariation(minWindDirection, maxWindDirection);
                 if (success && variation >= 60 && variation < 180) {
                     return $" {minWindDirection}V{maxWindDirection}";
@@ -74,10 +75,10 @@ namespace Mma.Common.Helpers {
         /// This is in accordance with reporting standards for cases where the wind speed is very low and wind direction is highly variable.
         /// </remarks>
         public string FormatVariationInDirectionForSpeedLessThan3Knots(string minWindDirection, string maxWindDirection, string averageWindSpeed) {
-            if (averageWindSpeed != "P99" && int.TryParse(averageWindSpeed, out int avgSpeed) && avgSpeed <= 3 && avgSpeed >= 0) {
+            if (averageWindSpeed != WindConstants.HundredAndOver && int.TryParse(averageWindSpeed, out int avgSpeed) && avgSpeed <= 3 && avgSpeed >= 0) {
                 var (success, variation) = TryCalculateWindDirectionVariation(minWindDirection, maxWindDirection);
                 if (success && variation >= 60 && variation < 180) {
-                    return $"VRB";
+                    return WindConstants.VariableSpeed;
                 }
             }
             return "";
@@ -97,7 +98,7 @@ namespace Mma.Common.Helpers {
         public string FormatWindDirectionVariationIsGreaterThan180(string minWindDirection, string maxWindDirection, string averageWindDirection) {
             var (success, variation) = TryCalculateWindDirectionVariation(minWindDirection, maxWindDirection);
             if (success && variation >= 180) {
-                return "VRB";
+                return WindConstants.VariableSpeed;
             }
             return averageWindDirection;
         }
@@ -137,13 +138,13 @@ namespace Mma.Common.Helpers {
         /// </remarks>
         public string FormatWindDirection(double? windDirection) {
             if (!windDirection.HasValue) {
-                return "///";
+                return WindConstants.MissingDirection;
             }
 
             var roundedDirection = RoundDirectionToNearestTenDegrees(windDirection).Value;
             return SurfaceWindDirectionIsInRange(roundedDirection.ToString("D3"))
                    ? roundedDirection.ToString("D3")
-                   : "///";
+                   : WindConstants.MissingDirection;
         }
 
         /// <summary>
@@ -160,13 +161,13 @@ namespace Mma.Common.Helpers {
         /// </remarks>
         public string RoundWindSpeed(double? windSpeed) {
             if (!windSpeed.HasValue) {
-                return "//";
+                return WindConstants.MissingSpeed;
             }
 
             var roundedSpeed = RoundWindSpeedToTheNearestKnot(windSpeed).Value;
             return roundedSpeed >= 1
                    ? roundedSpeed.ToString("D2")
-                   : "//";
+                   : WindConstants.MissingSpeed;
         }
 
         /// <summary>
@@ -184,21 +185,21 @@ namespace Mma.Common.Helpers {
         /// If the wind speed cannot be parsed or is less than 1 knot (not calm), it logs an error and returns "//".
         /// </remarks>
         public string FormatWindSpeed(string ff) {
-            if (string.IsNullOrEmpty(ff)) return "//";
+            if (string.IsNullOrEmpty(ff)) return WindConstants.MissingSpeed;
             if (int.TryParse(ff, out int windSpeed)) {
                 switch (windSpeed) {
                     case int n when n >= 100:
-                        return "P99";
+                        return WindConstants.HundredAndOver;
                     case int n when n >= 1:
                         return n.ToString("D2");
                     case 0:
                         return "00";
                     default:
-                        return "//";
+                        return WindConstants.MissingSpeed;
                 }
             }
             _loggingService.LogError(MethodBase.GetCurrentMethod().Name, "Failed to format wind speed");
-            return "//";
+            return WindConstants.MissingSpeed;
         }
 
         /// <summary>
