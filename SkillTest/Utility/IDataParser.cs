@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Mma.Common.IHelpers {
-    public interface IWindDataHelper {
+namespace Mma.Common.Utility
+{
+    public interface IDataParser
+    {
         int? RoundWindSpeedToTheNearestKnot(double? windSpeed);
         int? RoundDirectionToNearestTenDegrees(double? direction);
         bool WindFormatterHasData(WindData windData);

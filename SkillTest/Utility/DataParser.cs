@@ -1,17 +1,14 @@
-﻿using Mma.Common.IHelpers;
-using Mma.Common.IServices;
+﻿using Mma.Common.IServices;
 using Mma.Common.models;
-using Mma.Common.Services;
-using NLog;
+using Mma.Common.Utility;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
-namespace Mma.Common.Helpers {
-    public class WindDataHelper : IWindDataHelper {
+namespace Mma.Common.Helpers
+{
+    public class DataParser : IDataParser {
         private readonly ILoggingService _loggingService;
-        public WindDataHelper(ILoggingService logger) {
+        public DataParser(ILoggingService logger) {
             _loggingService = logger;
         }
 
@@ -34,6 +31,7 @@ namespace Mma.Common.Helpers {
         }
 
         public string FormatVariationInDirectionIfVariant(string minWindDirection, string maxWindDirection, string averageWindSpeed) {
+            //put this into a private function
             if (averageWindSpeed == "P99" || int.TryParse(averageWindSpeed, out int avgSpeed) && avgSpeed > 3) {
                 var (success, variation) = TryCalculateWindDirectionVariation(minWindDirection, maxWindDirection);
                 if (success && variation >= 60 && variation < 180) {
@@ -129,7 +127,6 @@ namespace Mma.Common.Helpers {
 
             // If the string cannot be parsed into an integer
             _loggingService.LogError(MethodBase.GetCurrentMethod().Name, "Failed to parse surface wind speed when checking speed is greater than 1");
-
             return false;
         }
 

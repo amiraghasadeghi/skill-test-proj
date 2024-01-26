@@ -1,12 +1,7 @@
-﻿using global::Mma.Common.IServices;
-using global::Mma.Common.Services;
-using global::Mma.Common.models;
+﻿using global::Mma.Common.Services;
 using NUnit.Framework;
-using System.Collections;
 using Moq;
 using NLog;
-using Mma.Common.IHelpers;
-using Mma.Common.Helpers;
 
 namespace Test.Mma.Common {
     [TestFixture]

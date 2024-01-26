@@ -1,11 +1,8 @@
-﻿using global::Mma.Common.IServices;
-using global::Mma.Common.Services;
+﻿using global::Mma.Common.Services;
 using global::Mma.Common.models;
 using NUnit.Framework;
-using System.Collections;
 using Moq;
 using NLog;
-using Mma.Common.IHelpers;
 using Mma.Common.Helpers;
 using Test.Mma.Common.TestCaseSources;
 
@@ -14,13 +11,13 @@ namespace Test.Mma.Common {
     public class Wind_data_helper_tests {
         private Mock<ILogger> _mockLogger;
         private LoggingService _loggingService;
-        private WindDataHelper _windDataHelper;
+        private DataParser _windDataHelper;
 
         [SetUp]
         public void SetUp() {
             _mockLogger = new Mock<ILogger>();
             _loggingService = new LoggingService(_mockLogger.Object);
-            _windDataHelper = new WindDataHelper(_loggingService);
+            _windDataHelper = new DataParser(_loggingService);
         }
 
         [TestCase(null, false)]

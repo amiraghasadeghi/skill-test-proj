@@ -1,20 +1,21 @@
 ﻿using Mma.Common.Constants;
-using Mma.Common.IHelpers;
 using Mma.Common.IServices;
 using Mma.Common.models;
+using Mma.Common.Utility;
 
-namespace Mma.Common.Services {
+namespace Mma.Common.Services
+{
     /// <summary>
     /// Service for formatting wind data.
     /// </summary>
     public class WindFormatterService : IWindFormatterService {
-        private readonly IWindDataHelper _windDataHelper;
+        private readonly IDataParser _windDataHelper;
 
         /// <summary>
         /// Initializes a new instance of the WindFormatterService.
         /// </summary>
         /// <param name="windDataHelper">The wind data helper to process wind data.</param>
-        public WindFormatterService(IWindDataHelper windDataHelper) {
+        public WindFormatterService(IDataParser windDataHelper) {
             _windDataHelper = windDataHelper;
         }
 

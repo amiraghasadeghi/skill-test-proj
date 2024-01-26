@@ -2,10 +2,8 @@
 using global::Mma.Common.Services;
 using global::Mma.Common.models;
 using NUnit.Framework;
-using System.Collections;
 using Moq;
 using NLog;
-using Mma.Common.IHelpers;
 using Mma.Common.Helpers;
 using Test.Mma.Common.TestCaseSources;
 
@@ -14,29 +12,15 @@ namespace Test.Mma.Common {
     public class Wind_formatter_tests {
         private Mock<ILogger> _mockLogger;
         private LoggingService _loggingService;
-        private WindDataHelper _mockWindDataHelper;
+        private DataParser _mockWindDataHelper;
         private IWindFormatterService windFormatter;
 
         [SetUp]
         public void SetUp() {
             _mockLogger = new Mock<ILogger>();
             _loggingService = new LoggingService(_mockLogger.Object);
-            _mockWindDataHelper = new WindDataHelper(_loggingService);
+            _mockWindDataHelper = new DataParser(_loggingService);
             windFormatter = new WindFormatterService(_mockWindDataHelper);
-        }
-
-        public static IEnumerable WindDataTestCases {
-            get {
-                yield return new TestCaseData(
-                    new WindData {
-                        AverageWindSpeed = null,
-                        MaximumWindDirection = null,
-                        AverageWindDirection = null,
-                        MaximumWindSpeed = null,
-                        MinimumWindDirection = null
-                    },
-                    "/////KT");
-            }
         }
 
 
