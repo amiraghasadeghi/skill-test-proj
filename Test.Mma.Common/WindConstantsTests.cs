@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace Mma.Common.Tests {
     [TestFixture]
-    public class WindConstantsTests {
+    public class Wind_constants_tests {
         private WindConstants _windConstants;
         private Mock<ILoggingService> _mockLoggingService;
 
