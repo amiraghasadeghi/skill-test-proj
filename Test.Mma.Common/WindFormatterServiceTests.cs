@@ -71,7 +71,6 @@ namespace Test.Mma.Common {
             Assert.AreEqual(expected, result);
         }
 
-
         [Test, TestCaseSource(typeof(WindDataTestSource), nameof(WindDataTestSource.WindDataFullTestCases))]
         public void Is_wind_data_report_correct(WindData windData, string expected) {
             string result = windFormatter.FormatWind(windData);
