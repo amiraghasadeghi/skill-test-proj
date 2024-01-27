@@ -21,7 +21,7 @@ namespace Test.Mma.Common {
         }
 
         [Test]
-        public void ValidateStringToInt_WithValidIntString_DoesNotThrowException() {
+        public void Validate_string_to_int_with_valid_int_string_does_not_throw_exception() {
             string validIntString = "123";
             string parameterName = "testParameter";
 
@@ -29,7 +29,7 @@ namespace Test.Mma.Common {
         }
 
         [Test]
-        public void ValidateStringToInt_WithInvalidIntString_ThrowsParsingException() {
+        public void Validate_string_to_int_with_invalid_int_string_throws_parsing_exception() {
             string invalidIntString = "abc";
             string parameterName = "testParameter";
 
