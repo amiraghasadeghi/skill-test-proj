@@ -52,15 +52,12 @@ namespace Mma.Common.Helpers {
         /// If these conditions are met, it returns a formatted string showing the range of variation; otherwise, it returns an empty string.
         /// </remarks>
         public string FormatVariationInDirectionIfVariant(string minWindDirection, string maxWindDirection, string averageWindSpeed) {
-            if (averageWindSpeed == WindConstants.HundredAndOver || int.TryParse(averageWindSpeed, out int avgSpeed) && avgSpeed > 3) {
-                var (success, variation) = TryCalculateWindDirectionVariation(minWindDirection, maxWindDirection);
-                if (success && variation >= 60 && variation < 180) {
-                    return $" {minWindDirection}V{maxWindDirection}";
-                }
+            if (ClassifyAverageSpeed(averageWindSpeed) == AverageSpeedCategory.Above3Knots) {
+                var (success, variation) = FormatWindDirectionBasedOnVariation(minWindDirection, maxWindDirection, averageWindSpeed);
+                if (success) return variation;
             }
             return "";
         }
-
 
         /// <summary>
         /// Formats the variation in wind direction for cases where the wind speed is less than or equal to 3 knots.
@@ -75,14 +72,49 @@ namespace Mma.Common.Helpers {
         /// This is in accordance with reporting standards for cases where the wind speed is very low and wind direction is highly variable.
         /// </remarks>
         public string FormatVariationInDirectionForSpeedLessThan3Knots(string minWindDirection, string maxWindDirection, string averageWindSpeed) {
-            if (averageWindSpeed != WindConstants.HundredAndOver && int.TryParse(averageWindSpeed, out int avgSpeed) && avgSpeed <= 3 && avgSpeed >= 0) {
-                var (success, variation) = TryCalculateWindDirectionVariation(minWindDirection, maxWindDirection);
-                if (success && variation >= 60 && variation < 180) {
-                    return WindConstants.VariableSpeed;
-                }
+            if (ClassifyAverageSpeed(averageWindSpeed) == AverageSpeedCategory.BelowOrEqual3Knots) {
+                var (success, variation) = FormatWindDirectionBasedOnVariation(minWindDirection, maxWindDirection, averageWindSpeed);
+                if (success) return variation;
             }
             return "";
         }
+
+        private AverageSpeedCategory ClassifyAverageSpeed(string averageWindSpeed) {
+            if (averageWindSpeed == WindConstants.HundredAndOver) {
+                return AverageSpeedCategory.Above3Knots;
+            }
+
+            if (int.TryParse(averageWindSpeed, out int avgSpeed)) {
+                if (avgSpeed > 3) {
+                    return AverageSpeedCategory.Above3Knots;
+                }
+                if (avgSpeed <= 3 && avgSpeed >= 0) {
+                    return AverageSpeedCategory.BelowOrEqual3Knots;
+                }
+            }
+
+            return AverageSpeedCategory.Invalid;
+        }
+
+        private (bool success, string formattedString) FormatWindDirectionBasedOnVariation(string minWindDirection, string maxWindDirection, string averageWindSpeed) {
+            var (success, variation) = TryCalculateWindDirectionVariation(minWindDirection, maxWindDirection);
+
+            if (success && variation >= 60 && variation < 180) {
+                // If average speed is less than or equal to 3 knots, return VRB.
+                if (ClassifyAverageSpeed(averageWindSpeed) == AverageSpeedCategory.BelowOrEqual3Knots) {
+                    return (true, WindConstants.VariableSpeed);
+                }
+
+                // Otherwise, return formatted string with variation.
+                return (true, $" {minWindDirection}V{maxWindDirection}");
+            }
+
+            return (false, string.Empty);
+        }
+
+
+
+       
 
         /// <summary>
         /// Formats the wind direction data when the variation in wind direction is greater than or equal to 180 degrees.
