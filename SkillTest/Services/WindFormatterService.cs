@@ -42,7 +42,7 @@ namespace Mma.Common.Services
             } catch (ParsingException ex) {
                 return ex.ParameterName;
             } catch (Exception) {
-                return "Something went wrong while trying to format wind data, please contact it department.";
+                return ExceptionConstants.DefaultUnhandledException;
             }
         }
 
