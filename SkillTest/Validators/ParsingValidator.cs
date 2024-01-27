@@ -18,7 +18,7 @@ namespace Mma.Common.Validators {
         /// <exception cref="ParsingException">Thrown when parsing fails.</exception>
         public void ValidateStringToInt(string valueToParse, string parameterName) {
             if (!int.TryParse(valueToParse, out _)) {
-                _loggingService.LogError(MethodBase.GetCurrentMethod().Name, $"Failed to parse '{parameterName}' as an integer. Value: {valueToParse}");
+                _loggingService.LogError(MethodBase.GetCurrentMethod().Name, $"Failed to parse '{parameterName}' as an integer. Value: {valueToParse}", null);
                 throw new ParsingException($"Failed to parse '{parameterName}' as an integer. Value: {valueToParse}");
             }
         }

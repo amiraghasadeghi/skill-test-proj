@@ -4,18 +4,21 @@ using Mma.Common.Interfaces;
 using Mma.Common.IServices;
 using Mma.Common.models;
 using System;
+using System.Reflection;
 
 namespace Mma.Common.Services
 {
     public class WindFormatterService : IWindFormatterService {
         private readonly IDataParser _windDataHelper;
+        private readonly ILoggingService _loggingService;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="WindFormatterService"/> class with a specified wind data helper.
         /// </summary>
         /// <param name="windDataHelper">A helper object for processing wind data.</param>
-        public WindFormatterService(IDataParser windDataHelper) {
+        public WindFormatterService(IDataParser windDataHelper, ILoggingService loggingService) {
             _windDataHelper = windDataHelper;
+            _loggingService = loggingService;
         }
 
         /// <summary>
@@ -41,7 +44,8 @@ namespace Mma.Common.Services
                 return $"{directionComponent}{ff}{gust}{WindConstants.Knot}{dnVdx}";
             } catch (ParsingException ex) {
                 return ex.ParameterName;
-            } catch (Exception) {
+            } catch (Exception ex) {
+                _loggingService.LogError(MethodBase.GetCurrentMethod().Name, ExceptionConstants.UnhandledStamp, ex);
                 return ExceptionConstants.DefaultUnhandledException;
             }
         }

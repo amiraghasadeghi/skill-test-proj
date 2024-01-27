@@ -56,7 +56,7 @@ namespace Mma.Common.Constants {
             try {
                 return ValuesAndDescriptions.TryGetValue(value, out var description) ? description : "Description not found";
             } catch (Exception ex) {
-                _loggingService.LogError(MethodBase.GetCurrentMethod().Name, ex.Message);
+                _loggingService.LogError(MethodBase.GetCurrentMethod().Name, ex.Message, ex);
                 return "Error processing request";
             }
         }
@@ -74,8 +74,8 @@ namespace Mma.Common.Constants {
             try {
                 return DescriptionsAndValues.TryGetValue(description, out var value) ? value : "Value not found";
             } catch (Exception ex) {
-                _loggingService.LogError(MethodBase.GetCurrentMethod().Name, ex.Message);
-                return "Error processing request";
+                _loggingService.LogError(MethodBase.GetCurrentMethod().Name, ExceptionConstants.UnhandledStamp, ex);
+                return ExceptionConstants.DefaultParsingError;
             }
         }
     }

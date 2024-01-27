@@ -12,19 +12,25 @@ namespace Mma.Common.Services {
         }
 
         /// <summary>
-        /// Logs an error with a timestamp, function name, and error message.
+        /// Logs an error message along with exception details.
         /// </summary>
         /// <param name="functionName">The name of the function where the error occurred.</param>
-        /// <param name="errorMessage">The error message to be logged.</param>
-        /// <remarks>
-        /// This method logs an error in a standardised format, including a timestamp, the name of the function, and the error message.
-        /// In a startup class, this logging functionality can be configured to output logs to a specific location. 
-        /// This can be a file for local or VM-based applications or integrated with Azure Application Insights for cloud-based services.
-        /// When configured with Azure Application Insights, it enables enhanced logging capabilities such as real-time monitoring and analytics.
-        /// </remarks>
-        public void LogError(string functionName, string errorMessage) {
+        /// <param name="errorMessage">The error message to log.</param>
+        /// <param name="exception">The exception object associated with the error, if available.</param>
+        public void LogError(string functionName, string errorMessage, Exception exception = null) {
             string timestamp = DateTime.UtcNow.ToString("dd/MM/yyy HH:mm:ss");
-            _logger.Error($"{functionName} - {errorMessage} [{timestamp} utc]");
+            string logMessage = $"{functionName} - {errorMessage} [{timestamp} utc]";
+
+            if (exception != null) {
+                logMessage += $"\nException: {exception}\n";
+
+                // Include inner exception details if present
+                if (exception.InnerException != null) {
+                    logMessage += $"Inner Exception: {exception.InnerException}\n";
+                }
+            }
+
+            _logger.Error(logMessage);
         }
 
     }

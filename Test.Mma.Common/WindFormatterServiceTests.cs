@@ -23,7 +23,7 @@ namespace Test.Mma.Common {
             _loggingService = new LoggingService(_mockLogger.Object);
             _parsingValidator = new ParsingValidator(_loggingService);
             _mockWindDataHelper = new DataParser(_loggingService, _parsingValidator);
-            windFormatter = new WindFormatterService(_mockWindDataHelper);
+            windFormatter = new WindFormatterService(_mockWindDataHelper, _loggingService);
         }
 
 

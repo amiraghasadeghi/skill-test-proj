@@ -4,6 +4,6 @@ using System.Text;
 
 namespace Mma.Common.IServices {
     public interface ILoggingService {
-        void LogError(string functionName, string errorMessage);
+        void LogError(string functionName, string errorMessage, Exception exception);
     }
 }
