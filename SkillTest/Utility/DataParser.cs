@@ -1,11 +1,12 @@
 ﻿using Mma.Common.Constants;
+using Mma.Common.Interfaces;
 using Mma.Common.IServices;
 using Mma.Common.models;
-using Mma.Common.Utility;
 using System;
 using System.Reflection;
 
-namespace Mma.Common.Helpers {
+namespace Mma.Common.Helpers
+{
     public class DataParser : IDataParser {
         private readonly ILoggingService _loggingService;
         public DataParser(ILoggingService logger) {

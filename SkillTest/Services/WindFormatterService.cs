@@ -1,9 +1,10 @@
 ﻿using Mma.Common.Constants;
+using Mma.Common.Interfaces;
 using Mma.Common.IServices;
 using Mma.Common.models;
-using Mma.Common.Utility;
 
-namespace Mma.Common.Services {
+namespace Mma.Common.Services
+{
     public class WindFormatterService : IWindFormatterService {
         private readonly IDataParser _windDataHelper;
 

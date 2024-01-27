@@ -1,7 +1,9 @@
 ﻿using Mma.Common.models;
 
-namespace Mma.Common.Utility {
-    public interface IDataParser {
+namespace Mma.Common.Interfaces
+{
+    public interface IDataParser
+    {
         int? RoundWindSpeedToTheNearestKnot(double? windSpeed);
         int? RoundDirectionToNearestTenDegrees(double? direction);
         bool WindFormatterHasData(WindData windData);
