@@ -22,7 +22,7 @@ namespace Mma.Common.Constants {
         public const string VariableSpeed = "VRB";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WindConstants"/> class.
+        /// Initialises a new instance of the <see cref="WindConstants"/> class.
         /// </summary>
         /// <param name="loggingService">Logging service for error logging.</param>
         public WindConstants(ILoggingService loggingService) {
