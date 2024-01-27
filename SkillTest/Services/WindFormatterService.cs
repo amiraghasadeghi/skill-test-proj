@@ -63,7 +63,7 @@ namespace Mma.Common.Services {
         /// <param name="ff">Formatted average wind speed.</param>
         /// <returns>Formatted variation in wind direction.</returns>
         private string FormatForVariationInWindDirection(WindData windData, string ff) {
-            return _windDataHelper.FormatVariationInDirectionIfVariant(
+            return _windDataHelper.FormatVariationInDirectionForSpeedMoreThan3Knots(
                 _windDataHelper.FormatWindDirection(windData.MinimumWindDirection),
                 _windDataHelper.FormatWindDirection(windData.MaximumWindDirection), ff);
         }

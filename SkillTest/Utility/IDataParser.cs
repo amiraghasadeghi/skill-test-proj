@@ -12,7 +12,7 @@ namespace Mma.Common.Utility {
         string FormatWindDirectionVariationIsGreaterThan180(string minWindDirection, string maxWindDirection, string averageWindDirection);
         string RoundWindSpeed(double? windSpeed);
         string FormatWindSpeed(string ff);
-        string FormatVariationInDirectionIfVariant(string minWindDirection, string maxWindDirection, string averageWindSpeed);
+        string FormatVariationInDirectionForSpeedMoreThan3Knots(string minWindDirection, string maxWindDirection, string averageWindSpeed);
         string FormatGustSpeed(double? averageWindSpeed, double? maximumWindSpeed);
         string FormatWindDirection(double? windDirection);
     }

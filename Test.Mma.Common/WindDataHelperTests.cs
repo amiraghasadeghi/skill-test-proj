@@ -87,7 +87,7 @@ namespace Test.Mma.Common {
 
         [Test, TestCaseSource(typeof(WindDataTestSource), nameof(WindDataTestSource.VariationInWindDirectionInRangeAndLessThan3TestCases))]
         public void Is_variation_in_wind_direction_in_range_and_greater_than_3(string minWindDirection, string maxWindDirection, string averageWindSpeed, string expected) {
-            string result = _windDataHelper.FormatVariationInDirectionIfVariant(minWindDirection, maxWindDirection, averageWindSpeed);
+            string result = _windDataHelper.FormatVariationInDirectionForSpeedMoreThan3Knots(minWindDirection, maxWindDirection, averageWindSpeed);
 
             Assert.AreEqual(expected, result);
         }
@@ -125,14 +125,14 @@ namespace Test.Mma.Common {
         [TestCase("100", "200", "10", " 100V200")]
         [TestCase("110", "300", "100", "")]
         public void Format_variation_in_direction_when_directions_valid_should_calculate_correct_variation(string minDirection, string maxDirection, string averageSpeed, string expected) {
-            string result = _windDataHelper.FormatVariationInDirectionIfVariant(minDirection, maxDirection, averageSpeed);
+            string result = _windDataHelper.FormatVariationInDirectionForSpeedMoreThan3Knots(minDirection, maxDirection, averageSpeed);
 
             Assert.AreEqual(expected, result);
         }
 
         [TestCase(null, "200", "10", "")]
         public void Format_variation_in_direction_when_directions_invalid_should_return_empty_string(string minDirection, string maxDirection, string averageSpeed, string expected) {
-            string result = _windDataHelper.FormatVariationInDirectionIfVariant(minDirection, maxDirection, averageSpeed);
+            string result = _windDataHelper.FormatVariationInDirectionForSpeedMoreThan3Knots(minDirection, maxDirection, averageSpeed);
 
             Assert.AreEqual("", result);
         }

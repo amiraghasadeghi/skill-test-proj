@@ -3,3 +3,4 @@
 - Started reading the Candidate Test MM Aviation documentation and analysing what is being asked of me, from what I understand, I'm to output a string value in a specific format based on a set of conditions and rules, to begin with the FormatWind(WindData windData) function appears to be
   receiving a model with some properties of the wind data.
 
+I used an interface incase we want to use different standards

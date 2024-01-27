@@ -51,7 +51,7 @@ namespace Mma.Common.Helpers {
         /// The method checks if the average wind speed is above 3 knots and the total variation in wind direction is between 60 and 180 degrees.
         /// If these conditions are met, it returns a formatted string showing the range of variation; otherwise, it returns an empty string.
         /// </remarks>
-        public string FormatVariationInDirectionIfVariant(string minWindDirection, string maxWindDirection, string averageWindSpeed) {
+        public string FormatVariationInDirectionForSpeedMoreThan3Knots(string minWindDirection, string maxWindDirection, string averageWindSpeed) {
             if (ClassifyAverageSpeed(averageWindSpeed) == AverageSpeedCategory.Above3Knots) {
                 var (success, variation) = FormatWindDirectionBasedOnVariation(minWindDirection, maxWindDirection, averageWindSpeed);
                 if (success) return variation;
