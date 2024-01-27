@@ -5,19 +5,23 @@ using Moq;
 using NLog;
 using Mma.Common.Helpers;
 using Test.Mma.Common.TestCaseSources;
+using Mma.Common.Interfaces;
+using Mma.Common.Validators;
 
 namespace Test.Mma.Common {
     [TestFixture]
     public class Wind_data_helper_tests {
         private Mock<ILogger> _mockLogger;
         private LoggingService _loggingService;
+        private ParsingValidator _parsingValidator;
         private DataParser _windDataHelper;
 
         [SetUp]
         public void SetUp() {
             _mockLogger = new Mock<ILogger>();
             _loggingService = new LoggingService(_mockLogger.Object);
-            _windDataHelper = new DataParser(_loggingService);
+            _parsingValidator = new ParsingValidator(_loggingService);
+            _windDataHelper = new DataParser(_loggingService, _parsingValidator);
         }
 
         [TestCase(null, false)]

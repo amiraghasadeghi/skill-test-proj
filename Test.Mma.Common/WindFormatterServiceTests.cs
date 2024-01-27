@@ -6,12 +6,14 @@ using Moq;
 using NLog;
 using Mma.Common.Helpers;
 using Test.Mma.Common.TestCaseSources;
+using Mma.Common.Validators;
 
 namespace Test.Mma.Common {
     [TestFixture]
     public class Wind_formatter_tests {
         private Mock<ILogger> _mockLogger;
         private LoggingService _loggingService;
+        private ParsingValidator _parsingValidator;
         private DataParser _mockWindDataHelper;
         private IWindFormatterService windFormatter;
 
@@ -19,7 +21,8 @@ namespace Test.Mma.Common {
         public void SetUp() {
             _mockLogger = new Mock<ILogger>();
             _loggingService = new LoggingService(_mockLogger.Object);
-            _mockWindDataHelper = new DataParser(_loggingService);
+            _parsingValidator = new ParsingValidator(_loggingService);
+            _mockWindDataHelper = new DataParser(_loggingService, _parsingValidator);
             windFormatter = new WindFormatterService(_mockWindDataHelper);
         }
 

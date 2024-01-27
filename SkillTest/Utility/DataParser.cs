@@ -1,16 +1,19 @@
 ﻿using Mma.Common.Constants;
+using Mma.Common.Exceptions;
 using Mma.Common.Interfaces;
 using Mma.Common.IServices;
 using Mma.Common.models;
+using Mma.Common.Validators;
 using System;
 using System.Reflection;
 
-namespace Mma.Common.Helpers
-{
+namespace Mma.Common.Helpers {
     public class DataParser : IDataParser {
         private readonly ILoggingService _loggingService;
-        public DataParser(ILoggingService logger) {
+        private readonly IParsingValidator _parsingValidator;
+        public DataParser(ILoggingService logger, IParsingValidator parsingValidator) {
             _loggingService = logger;
+            _parsingValidator = parsingValidator;
         }
 
         /// <summary>
@@ -81,11 +84,12 @@ namespace Mma.Common.Helpers
         }
 
         private AverageSpeedCategory ClassifyAverageSpeed(string averageWindSpeed) {
-            if (averageWindSpeed == WindConstants.HundredAndOver) {
-                return AverageSpeedCategory.Above3Knots;
-            }
+            if (!string.IsNullOrWhiteSpace(averageWindSpeed) && averageWindSpeed != WindConstants.MissingSpeed) {
+                if (averageWindSpeed == WindConstants.HundredAndOver) {
+                    return AverageSpeedCategory.Above3Knots;
+                }
 
-            if (int.TryParse(averageWindSpeed, out int avgSpeed)) {
+                int avgSpeed = IntToStringParser(averageWindSpeed, nameof(averageWindSpeed));
                 if (avgSpeed > 3) {
                     return AverageSpeedCategory.Above3Knots;
                 }
@@ -115,7 +119,7 @@ namespace Mma.Common.Helpers
 
 
 
-       
+
 
         /// <summary>
         /// Formats the wind direction data when the variation in wind direction is greater than or equal to 180 degrees.
@@ -148,12 +152,19 @@ namespace Mma.Common.Helpers
         /// If either the minimum or maximum wind direction cannot be parsed into an integer, or if they are invalid values (less than 0), the method logs an error and indicates failure by returning (false, 0).
         /// </remarks>
         public (bool success, int variation) TryCalculateWindDirectionVariation(string minWindDirection, string maxWindDirection) {
-            if (int.TryParse(maxWindDirection, out int maxDir) && maxDir >= 0 &&
-                int.TryParse(minWindDirection, out int minDir) && minDir >= 0) {
-                int variation = Math.Abs(maxDir - minDir);
-                return (true, variation);
+            if (!string.IsNullOrWhiteSpace(minWindDirection) && !string.IsNullOrWhiteSpace(maxWindDirection)
+                && minWindDirection != WindConstants.MissingDirection 
+                && maxWindDirection != WindConstants.MissingDirection) {
+
+                int maxDir = IntToStringParser(maxWindDirection, nameof(maxWindDirection));
+                int minDir = IntToStringParser(minWindDirection, nameof(minWindDirection));
+
+                if (maxDir >= 0 && minDir >= 0) {
+                    int variation = Math.Abs(maxDir - minDir);
+                    return (true, variation);
+                }
             }
-            _loggingService.LogError(MethodBase.GetCurrentMethod().Name, $"Error parsing wind direction");
+            
             return (false, 0);
         }
 
@@ -218,21 +229,19 @@ namespace Mma.Common.Helpers
         /// If the wind speed cannot be parsed or is less than 1 knot (not calm), it logs an error and returns "//".
         /// </remarks>
         public string FormatWindSpeed(string ff) {
-            if (string.IsNullOrEmpty(ff)) return WindConstants.MissingSpeed;
-            if (int.TryParse(ff, out int windSpeed)) {
-                switch (windSpeed) {
-                    case int n when n >= 100:
-                        return WindConstants.HundredAndOver;
-                    case int n when n >= 1:
-                        return n.ToString("D2");
-                    case 0:
-                        return "00";
-                    default:
-                        return WindConstants.MissingSpeed;
-                }
+            if (string.IsNullOrEmpty(ff) || ff == WindConstants.MissingSpeed) return WindConstants.MissingSpeed;
+            int windSpeed = IntToStringParser(ff, nameof(ff));
+
+            switch (windSpeed) {
+                case int n when n >= 100:
+                    return WindConstants.HundredAndOver;
+                case int n when n >= 1:
+                    return n.ToString("D2");
+                case 0:
+                    return "00";
+                default:
+                    return WindConstants.MissingSpeed;
             }
-            _loggingService.LogError(MethodBase.GetCurrentMethod().Name, "Failed to format wind speed");
-            return WindConstants.MissingSpeed;
         }
 
         /// <summary>
@@ -251,10 +260,8 @@ namespace Mma.Common.Helpers
         public bool SurfaceWindSpeedIsGreaterThan1(string ff) {
             if (string.IsNullOrEmpty(ff)) return false;
 
-            if (int.TryParse(ff, out int windSpeed)) return windSpeed >= 1;
-
-            _loggingService.LogError(MethodBase.GetCurrentMethod().Name, "Failed to parse surface wind speed when checking speed is greater than 1");
-            return false;
+            int windSpeed = IntToStringParser(ff, nameof(ff));
+            return windSpeed >= 1;
         }
 
         /// <summary>
@@ -273,11 +280,8 @@ namespace Mma.Common.Helpers
         public bool SurfaceWindDirectionIsInRange(string ddd) {
             if (string.IsNullOrEmpty(ddd)) return false;
 
-            if (int.TryParse(ddd, out int windDirection)) return windDirection >= 10 && windDirection <= 360;
-
-            _loggingService.LogError(MethodBase.GetCurrentMethod().Name, "Failed to parse surface wind direction when checking if in range");
-            // If the string cannot be parsed into an integer
-            return false;
+            int windDirection = IntToStringParser(ddd, nameof(ddd));
+            return windDirection >= 10 && windDirection <= 360;
         }
 
         /// <summary>
@@ -326,6 +330,23 @@ namespace Mma.Common.Helpers
                 return (int)(Math.Round(direction.Value / 10) * 10);
             }
             return null;
+        }
+
+        /// <summary>
+        /// Parses a string to an integer after validating it with the ParsingValidator.
+        /// </summary>
+        /// <param name="valueToParse">The string value that needs to be parsed into an integer.</param>
+        /// <param name="parameterName">The name of the parameter being parsed, used for error logging and exception messages.</param>
+        /// <returns>The parsed integer value of the input string.</returns>
+        /// <exception cref="ParsingException">Thrown when the string cannot be parsed into an integer.</exception>
+        /// <remarks>
+        /// This method ensures that the string is a valid integer before attempting to parse it.
+        /// The ParsingValidator is used to validate the string, and if it fails to validate, a ParsingException is thrown.
+        /// If the validation is successful, the method safely parses the string to an integer and returns it.
+        /// </remarks>
+        private int IntToStringParser(string valueToParse, string parameterName) {
+            _parsingValidator.ValidateStringToInt(valueToParse, parameterName);
+            return int.Parse(valueToParse); // Safe to parse here as validator has already checked.
         }
     }
 }

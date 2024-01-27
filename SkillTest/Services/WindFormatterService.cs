@@ -1,7 +1,9 @@
 ﻿using Mma.Common.Constants;
+using Mma.Common.Exceptions;
 using Mma.Common.Interfaces;
 using Mma.Common.IServices;
 using Mma.Common.models;
+using System;
 
 namespace Mma.Common.Services
 {
@@ -22,20 +24,26 @@ namespace Mma.Common.Services
         /// <param name="windData">Wind data to be formatted.</param>
         /// <returns>A string representing formatted wind data.</returns>
         public string FormatWind(WindData windData) {
-            if (!_windDataHelper.WindFormatterHasData(windData))
-                return WindConstants.Default;
+            try {
+                if (!_windDataHelper.WindFormatterHasData(windData))
+                    return WindConstants.Default;
 
-            if (_windDataHelper.IsCalmWind(windData))
-                return WindConstants.CalmWinds;
+                if (_windDataHelper.IsCalmWind(windData))
+                    return WindConstants.CalmWinds;
 
-            var ddd = FormatAverageWindDirection(windData);
-            var ff = FormatAverageWindSpeed(windData);
-            var dnVdx = FormatForVariationInWindDirection(windData, ff);
-            var gust = FormatGustSpeed(windData);
-            var dnVdxAtLessThan3Knots = FormatVariationInWindDirectionForSpeedLessThan3(windData, ff);
-            string directionComponent = DetectAppropriateDirectionComponentBasedOnSpeed(windData, dnVdxAtLessThan3Knots, ddd);
+                var ddd = FormatAverageWindDirection(windData);
+                var ff = FormatAverageWindSpeed(windData);
+                var dnVdx = FormatForVariationInWindDirection(windData, ff);
+                var gust = FormatGustSpeed(windData);
+                var dnVdxAtLessThan3Knots = FormatVariationInWindDirectionForSpeedLessThan3(windData, ff);
+                string directionComponent = DetectAppropriateDirectionComponentBasedOnSpeed(windData, dnVdxAtLessThan3Knots, ddd);
 
-            return $"{directionComponent}{ff}{gust}{WindConstants.Knot}{dnVdx}";
+                return $"{directionComponent}{ff}{gust}{WindConstants.Knot}{dnVdx}";
+            } catch (ParsingException ex) {
+                return ex.ParameterName;
+            } catch (Exception) {
+                return "Something went wrong while trying to format wind data, please comtact it department.";
+            }
         }
 
         /// <summary>
